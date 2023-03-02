@@ -11,15 +11,53 @@
 <body>
   <script>
 
+    var tId = null;
+
+    function randomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+
     function demo(e) {
-      const ch1 = $$("chart1");
-      const ch2 = $$("chart2");
-      var count = 0;
-      setInterval(() => {
-        ch1.add({xValue: count, yValue: Math.random() * 100});
-        ch2.add({xValue: count, yValue: Math.random() * 100});
-        count++;
-      }, 1000)
+      const ch1 = $$("chart1"), ch2 = $$("chart2");
+      const newStudents = $$("sln").getValue(), cost = $$("slc").getValue(), pack = $$("slp").getValue(), stacking = $$("sls").getValue() / 100.0;
+      const initialStudents = $$("sla").getValue();
+      var days = 0, amount = 0, revenue = 0;
+      const studentPool = [];
+      const addNewStudent = () => {
+        const student = {
+          lessons: randomInt(0, 2 * (pack - 10)) + 10
+        };
+        studentPool.push(student);
+        amount += student.lessons * cost;
+      };
+      for (var i = 0; i < initialStudents; i++) {
+        addNewStudent();
+      }
+      if (tId != null) {
+        clearInterval(tId);
+        ch1.clearAll();
+        ch2.clearAll();
+      }
+      tId = setInterval(() => {
+        ch1.add({ xValue: days, yValue: amount });
+        ch2.add({ xValue: days, yValue: revenue });
+        days++;
+        studentPool.forEach(student => {
+          if (Math.random() <= (2 / 7.0)) { // two times a week
+            student.lessons--;
+            amount -= cost;
+            if (student.lessons <= 0) {
+              student.lessons = randomInt(0, 2 * (pack - 10)) + 10;
+              amount += student.lessons * cost;
+            }
+          }
+        });
+        for (var i = 0; i < newStudents; i++) {
+          addNewStudent();
+        }
+      }, 250)
     }
 
     webix.ui.fullScreen();
@@ -33,56 +71,55 @@
               view: "form",
               id: "mainForm",
               elements: [
-                { view: "slider", label: "Alumnos: ", value: 1000, name: "alumnos", labelWidth: "auto", min: 100, max: 100000, step: 100, title: o => o.value, id: "sla" },
-                { view: "slider", label: "Nuevos alumnos a la semana:", value: 10, name: "alumnos_nuevos", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "sln" },
+                { view: "slider", label: "Alumnos:", value: 100, name: "alumnos", labelWidth: 100, min: 100, max: 100000, step: 100, title: o => o.value, id: "sla" },
+                { view: "slider", label: "Nuevos alumnos al día:", value: 10, name: "alumnos_nuevos", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "sln" },
                 { view: "slider", label: "El cobro promedio por una clase:", value: 10, name: "cobro", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "slc" },
-                { view: "slider", label: "Cantidad de las clases dentro de pack: ", value: 20, labelWidth: "auto", min: 10, max: 40, title: o => o.value, id: "slp" },
+                { view: "slider", label: "Cantidad de las clases dentro de pack:", value: 20, labelWidth: "auto", min: 10, max: 40, title: o => o.value, id: "slp" },
+                { view: "slider", label: "% de staking:", value: 10, labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "sls" },
                 { margin: 5, cols: [{ view: "button", value: "Demo", css: "webix_primary", click: e => demo(e) }] }
               ]
             },
+            { view: "label", label: "Total amount" },
             {
               id: "chart1",
               view: "chart",
               type: "line",
               value: "#yValue#",
               dynamic: true,
-              cellWidth: 50,
+              cellWidth: 60,
               animateDuration: 300,
               height: 300,
-              xAxis: {
-                template: "#xValue#"
-              },
-              yAxis: {
-                template: obj => obj % 20 ? "" : obj
-              },
+              label: o => parseInt(o.yValue, 10),
+              xAxis: { template: "#xValue#" },
+              yAxis: { template: obj => obj % 20 ? "" : obj },
               series: [
                 {
                   value: "#yValue#",
                   item: { borderColor: "#1293f8", color: "#ffffff" },
-                  line: { color: "#1293f8", width: 2 }
+                  line: { color: "#1293f8", width: 2 },
+                  tooltip: { template:"#yValue#" }
                 }
               ]
             },
+            { view: "label", label: "Revenue" },
             {
               id: "chart2",
               view: "chart",
               type: "line",
               value: "#yValue#",
               dynamic: true,
-              cellWidth: 50,
+              cellWidth: 60,
               animateDuration: 300,
               height: 300,
-              xAxis: {
-                template: "#xValue#"
-              },
-              yAxis: {
-                template: obj => obj % 20 ? "" : obj
-              },
+              label: o => parseInt(o.yValue, 10),
+              xAxis: { template: "#xValue#" },
+              yAxis: { template: obj => obj % 20 ? "" : obj },
               series: [
                 {
                   value: "#yValue#",
                   item: { borderColor: "#1293f8", color: "#ffffff" },
-                  line: { color: "#1293f8", width: 2 }
+                  line: { color: "#1293f8", width: 2 },
+                  tooltip: { template:"#yValue#" }
                 }
               ]
             }
