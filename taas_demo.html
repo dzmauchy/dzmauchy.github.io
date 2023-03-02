@@ -1,40 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.webix.com/edge/webix.css" type="text/css">
-    <script src="https://cdn.webix.com/edge/webix.js" type="text/javascript"></script>  
-  </head>
-  <body>
-    <script>
 
-      function demo(e) {
-        
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.webix.com/edge/webix.css" type="text/css">
+  <script src="https://cdn.webix.com/edge/webix.js" type="text/javascript"></script>
+</head>
 
-      webix.ui.fullScreen();
-      webix.ready(() => {
-         webix.ui({
-           view: "scrollview",
-           scroll: "y",
-           body: {
-             rows: [
-              {
-                view: "form", 
-                id: "mainForm",
-                elements: [
-                  { view: "slider", label: "Alumnos: ", value: 1000, name: "alumnos", labelWidth: "auto",min: 100, max: 100000, step: 100, title: o => o.value, id: "sla" },
-                  { view: "slider", label: "Nuevos alumnos a la semana:", value: 10, name: "alumnos_nuevos", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "sln" },
-                  { view: "slider", label: "El cobro promedio por una clase:", value: 10, name: "cobro", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "slc" },
-                  { view: "slider", label: "Cantidad de las clases dentro de pack: ", value: 20, labelWidth: "auto", min: 10, max: 40, title: o => o.value, id: "slp" },
-                  { margin: 5, cols: [{ view: "button", value: "Demo", css: "webix_primary", click: e => demo(e) }]}
-                ]
-              }
-             ]
-           }
-         });
+<body>
+  <script>
+
+    function demo(e) {
+      const ch1 = $$("chart1");
+      const ch2 = $$("chart2");
+      var count = 0;
+      setInterval(() => {
+        ch1.add({xValue: count, yValue: Math.random() * 100});
+        ch2.add({xValue: count, yValue: Math.random() * 100});
+        count++;
+      }, 1000)
+    }
+
+    webix.ui.fullScreen();
+    webix.ready(() => {
+      webix.ui({
+        view: "scrollview",
+        scroll: "y",
+        body: {
+          rows: [
+            {
+              view: "form",
+              id: "mainForm",
+              elements: [
+                { view: "slider", label: "Alumnos: ", value: 1000, name: "alumnos", labelWidth: "auto", min: 100, max: 100000, step: 100, title: o => o.value, id: "sla" },
+                { view: "slider", label: "Nuevos alumnos a la semana:", value: 10, name: "alumnos_nuevos", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "sln" },
+                { view: "slider", label: "El cobro promedio por una clase:", value: 10, name: "cobro", labelWidth: "auto", min: 1, max: 100, title: o => o.value, id: "slc" },
+                { view: "slider", label: "Cantidad de las clases dentro de pack: ", value: 20, labelWidth: "auto", min: 10, max: 40, title: o => o.value, id: "slp" },
+                { margin: 5, cols: [{ view: "button", value: "Demo", css: "webix_primary", click: e => demo(e) }] }
+              ]
+            },
+            {
+              id: "chart1",
+              view: "chart",
+              type: "line",
+              value: "#yValue#",
+              dynamic: true,
+              cellWidth: 50,
+              animateDuration: 300,
+              height: 300,
+              xAxis: {
+                template: "#xValue#"
+              },
+              yAxis: {
+                template: obj => obj % 20 ? "" : obj
+              },
+              series: [
+                {
+                  value: "#yValue#",
+                  item: { borderColor: "#1293f8", color: "#ffffff" },
+                  line: { color: "#1293f8", width: 2 }
+                }
+              ]
+            },
+            {
+              id: "chart2",
+              view: "chart",
+              type: "line",
+              value: "#yValue#",
+              dynamic: true,
+              cellWidth: 50,
+              animateDuration: 300,
+              height: 300,
+              xAxis: {
+                template: "#xValue#"
+              },
+              yAxis: {
+                template: obj => obj % 20 ? "" : obj
+              },
+              series: [
+                {
+                  value: "#yValue#",
+                  item: { borderColor: "#1293f8", color: "#ffffff" },
+                  line: { color: "#1293f8", width: 2 }
+                }
+              ]
+            }
+          ]
+        }
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>
