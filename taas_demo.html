@@ -21,9 +21,9 @@
 
     function demo(e) {
       const ch1 = $$("chart1"), ch2 = $$("chart2");
-      const newStudents = $$("sln").getValue(), cost = $$("slc").getValue(), pack = $$("slp").getValue(), stacking = $$("sls").getValue() / 100.0;
+      const newStudents = $$("sln").getValue(), cost = $$("slc").getValue(), pack = $$("slp").getValue(), stacking = $$("sls").getValue() / (12 * 100.0);
       const initialStudents = $$("sla").getValue();
-      var days = 0, amount = 0, revenue = 0;
+      var days = 0, amount = 0, revenue = 0, inStaking = 0;
       const studentPool = [];
       const addNewStudent = () => {
         const student = {
@@ -35,6 +35,7 @@
       for (var i = 0; i < initialStudents; i++) {
         addNewStudent();
       }
+      inStaking = amount;
       if (tId != null) {
         clearInterval(tId);
         ch1.clearAll();
@@ -56,6 +57,13 @@
         });
         for (var i = 0; i < newStudents; i++) {
           addNewStudent();
+        }
+        if ((days % 30) == 0) { // each month
+          revenue += stacking * inStaking;
+          const delta = amount - inStaking;
+          if (delta > 0) {
+            inStaking += (delta * 2) / 3;
+          }
         }
       }, 250)
     }
