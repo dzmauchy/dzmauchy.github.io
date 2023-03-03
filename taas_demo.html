@@ -25,16 +25,12 @@
       const initialStudents = $$("sla").getValue();
       var days = 0, amount = 0, revenue = 0, inStaking = 0;
       const studentPool = [];
-      const addNewStudent = () => {
-        const student = {
-          lessons: randomInt(0, 2 * (pack - 10)) + 10
-        };
-        studentPool.push(student);
-        amount += student.lessons * cost;
+      const addNewStudents = n => {
+        const arr = Array.from({length: n}, (v, k) => ({lessons: randomInt(0, 2 * (pack - 10)) + 10}));
+        studentPool.push(...arr);
+        arr.forEach(v => amount += v.lessons * cost);
       };
-      for (var i = 0; i < initialStudents; i++) {
-        addNewStudent();
-      }
+      addNewStudents(initialStudents);
       inStaking = amount;
       if (tId != null) {
         clearInterval(tId);
@@ -47,17 +43,14 @@
         days++;
         studentPool.forEach(student => {
           if (Math.random() <= (2 / 7.0)) { // two times a week
-            student.lessons--;
             amount -= cost;
-            if (student.lessons <= 0) {
+            if (--student.lessons <= 0) {
               student.lessons = randomInt(0, 2 * (pack - 10)) + 10;
               amount += student.lessons * cost;
             }
           }
         });
-        for (var i = 0; i < newStudents; i++) {
-          addNewStudent();
-        }
+        addNewStudents(newStudents);
         if ((days % 30) == 0) { // each month
           revenue += stacking * inStaking;
           const delta = amount - inStaking;
@@ -65,7 +58,7 @@
             inStaking += (delta * 2) / 3;
           }
         }
-      }, 250)
+      }, 200)
     }
 
     webix.ui.fullScreen();
